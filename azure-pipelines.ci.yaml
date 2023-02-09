@@ -4,31 +4,25 @@ trigger:
 pool:
    vmImage: 'windows-latest'
 
-variables:
-  buildConfiguration: 'Release'
-
-- stages: build
-  jobs:
-   - jobs:BuildArtifact
-     displayName: Build
-     steps:
-     - task:CopyFile@2
+stages:
+  - stage: build
+    jobs:
+    - job: BuildArtifact
+      displayName: Build
+      steps:
+      - task: CopyFiles@2
         inputs:
-          SourceFolder:'$(System.DefaultWorkingDirectory)'
+          SourceFolder: '$(System.DefaultWorkingDirectory)'
           Contents : |
             **
             |.github/**
             |.git/**
             |*.md
-          TargetFolder:'$(Build.ArtifactStagingDirectory)'    
+          TargetFolder: '$(Build.ArtifactStagingDirectory)'    
           CleanTargetFolder: true
           Overwrite: true
-     - task: PublishBuildArtifacts@1
-       inputs:
-         pathToPublish: '$(Build.ArtifactStagingDirectory)'
-         artifactName: 'drop'
-         publishLoaction: 'Container'  
-
-steps:
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
+      -  task: PublishBuildArtifacts@1
+         inputs:
+           PathToPublish: '$(Build.ArtifactStagingDirectory)'
+           ArtifactName: 'drop'
+           publishLocation: 'Container'  
